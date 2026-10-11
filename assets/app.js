@@ -14,6 +14,7 @@ const ORDER = Object.keys(PHASES);
 const STALE_MS = 7 * 24 * 60 * 60 * 1000;
 const SVG_NS = "http://www.w3.org/2000/svg";
 const CX = 200, CY = 235, RX = 140, RY = 175;
+const ARROW_SCALE = 1.12; // 화살표를 달걀 테두리에서 띄우는 비율
 
 // 맨 위(금리 고점)에서 시작해 오른쪽 → 아래 → 왼쪽으로, 시계방향으로 도는 각도(도)를 달걀 둘레 좌표로 바꾼다.
 // 위쪽이 좁은 달걀 모양이 되도록 가로 폭을 cos에 따라 줄인다.
@@ -50,10 +51,17 @@ function dot(svg, angle, r, cls, label) {
   svg.append(g);
 }
 
-function sideLabel(x, arrow, text) {
+function sideLabel(x, top, bottom) {
   const label = el("text", { x, y: CY - 6, class: "axis-label" });
-  label.append(el("tspan", { x, dy: 0 }, arrow), el("tspan", { x, dy: "1.2em" }, text));
+  label.append(el("tspan", { x, dy: 0 }, top), el("tspan", { x, dy: "1.2em" }, bottom));
   return label;
+}
+
+// 달걀 바깥을 따라 from°에서 to°로 시계방향으로 도는 곡선 화살표.
+function cycleArrow(from, to) {
+  const pts = [];
+  for (let d = from; d <= to; d += 2) pts.push(eggPoint(d, ARROW_SCALE));
+  return el("path", { d: `M${polyline(pts)}`, class: "cycle-arrow", "marker-end": "url(#arrowhead)" });
 }
 
 function drawEgg(svg, data) {
@@ -73,9 +81,15 @@ function drawEgg(svg, data) {
 
   svg.append(el("text", { x: CX, y: 34, class: "axis-label" }, "금리 고점 · 주가 고점"));
   svg.append(el("text", { x: CX, y: 446, class: "axis-label" }, "금리 저점 · 주가 저점"));
-  // 좌우 라벨은 화살표와 글자를 두 줄로 나눠, 모바일에서 글자를 키워도 달걀과 겹치지 않게 한다.
-  svg.append(sideLabel(9, "←", "금리 상승"));
-  svg.append(sideLabel(391, "→", "금리 하락"));
+  // 시계방향 화살표: 오른쪽은 위→아래(금리 하락기), 왼쪽은 아래→위(금리 상승기).
+  const marker = el("marker", { id: "arrowhead", viewBox: "0 0 10 10", refX: 6, refY: 5, markerWidth: 5, markerHeight: 5, orient: "auto-start-reverse" });
+  marker.append(el("path", { d: "M0,0 L10,5 L0,10 Z", class: "arrowhead" }));
+  const defs = el("defs");
+  defs.append(marker);
+  svg.append(defs, cycleArrow(45, 135), cycleArrow(225, 315));
+  // 좌우 라벨은 두 줄로 나눠, 모바일에서 글자를 키워도 화살표와 겹치지 않게 한다.
+  svg.append(sideLabel(5, "금리", "상승"));
+  svg.append(sideLabel(395, "금리", "하락"));
 
   dot(svg, data.angle, 10, "now", `${data.as_of} · ${data.phase} ${PHASES[data.phase].name} (현재)`);
 }
