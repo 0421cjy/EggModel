@@ -39,6 +39,18 @@ h1 .badge { color: var(--accent); }
 #egg .hit { fill: transparent; cursor: default; }
 #egg .now { fill: var(--accent); stroke: var(--surface); stroke-width: 3; }
 .caption { margin: 8px 0 0; text-align: center; color: var(--muted); font-size: 14px; }
+.stages-wrap { margin: 0 0 24px; }
+.stages-wrap h2 { font-size: 20px; margin: 0 0 8px; }
+.stages { list-style: none; margin: 0; padding: 0; display: grid; gap: 8px; }
+.stage { padding: 10px 14px; background: var(--surface); border: 1px solid var(--line); border-left: 4px solid var(--line); border-radius: 10px; }
+.stage.turning { background: transparent; border-style: dashed; border-left-style: solid; }
+.stage.current { background: var(--accent-soft); border-color: var(--accent); }
+.stage-head { margin: 0; display: flex; align-items: baseline; gap: 8px; flex-wrap: wrap; }
+.stage-key { font-size: 17px; min-width: 2.2em; }
+.stage-name { color: var(--muted); font-size: 14px; }
+.stage.current .stage-name { color: var(--ink); }
+.now-badge { margin-left: auto; padding: 1px 8px; border-radius: 999px; background: var(--accent); color: var(--bg); font-size: 12px; font-weight: 700; }
+.stage-desc { margin: 2px 0 0; font-size: 15px; }
 .cards { display: grid; grid-template-columns: repeat(auto-fit, minmax(160px, 1fr)); gap: 12px; }
 .card { padding: 14px 16px; background: var(--surface); border: 1px solid var(--line); border-radius: 12px; }
 .card .label { margin: 0; color: var(--muted); font-size: 13px; }

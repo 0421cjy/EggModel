@@ -1,12 +1,16 @@
-const PHASES = {
-  A: { name: "금리 고점 통과", action: "예금을 찾아 채권을 사는 시기" },
-  B: { name: "금리 하락기", action: "채권 차익을 실현하고 부동산으로 옮기는 시기" },
-  C: { name: "금리 저점 근접", action: "부동산을 정리하고 주식을 사는 시기" },
-  D: { name: "금리 상승 전환", action: "주식 비중을 줄이고 현금(예금)을 확보하는 시기" },
-  E: { name: "금리 상승기", action: "예금을 유지하며 남은 위험자산을 정리하는 시기" },
-  F: { name: "금리 고점 근접", action: "예금 비중을 최대로 두고 채권 매수를 준비하는 시기" },
-};
-const ORDER = ["A", "B", "C", "D", "E", "F"];
+// 금리 고점(맨 위)에서 시계방향으로 도는 순서대로 나열한 국면. 고점·저점은 구간이 아니라 전환점이라 판정 대상(PHASES)에서 빠진다.
+const STAGES = [
+  { key: "B1", name: "하락 조정 국면", desc: "저점부터 A1~A3 국면을 거치며 주가가 높아졌고, 소신파 투자자가 부화뇌동파 투자자에게 주식을 넘긴 상태" },
+  { key: "B2", name: "하락 동행 국면", desc: "B1 국면과 크게 다르지 않지만 가격 하락이 진행되는 상태" },
+  { key: "B3", name: "하락 과장 국면", desc: "시장의 공포가 최고조인 상태" },
+  { key: "저점", turning: true, desc: "B3 국면의 끝. 주가가 많이 떨어졌고 비관주의가 여전한 상태" },
+  { key: "A1", name: "상승 조정 국면", desc: "저점을 지나 상승 국면에 진입하기 시작하는 상태" },
+  { key: "A2", name: "상승 동행 국면", desc: "자산 가격 상승이 실물경기 상승을 앞지르는 상태" },
+  { key: "A3", name: "상승 과장 국면", desc: "실물경기까지 회복되어 가며 과장 국면에 진입하는 상태" },
+  { key: "고점", turning: true, desc: "경기부양책이 중단되고 인플레이션 우려가 등장하기 시작하며 주가가 고점을 맞이한 상태" },
+];
+const PHASES = Object.fromEntries(STAGES.filter((s) => !s.turning).map((s) => [s.key, s]));
+const ORDER = Object.keys(PHASES);
 const STALE_MS = 7 * 24 * 60 * 60 * 1000;
 const SVG_NS = "http://www.w3.org/2000/svg";
 const CX = 200, CY = 235, RX = 140, RY = 175;
@@ -61,12 +65,12 @@ function drawEgg(svg, data) {
     svg.append(el("text", { x, y, class: "phase-label" + (key === data.phase ? " current" : "") }, key));
   });
 
-  svg.append(el("text", { x: CX, y: 34, class: "axis-label" }, "금리 고점"));
-  svg.append(el("text", { x: CX, y: 446, class: "axis-label" }, "금리 저점"));
-  svg.append(el("text", { x: 18, y: CY + 5, class: "axis-label" }, "← 상승기"));
-  svg.append(el("text", { x: 382, y: CY + 5, class: "axis-label" }, "하락기 →"));
+  svg.append(el("text", { x: CX, y: 34, class: "axis-label" }, "금리 고점 · 주가 고점"));
+  svg.append(el("text", { x: CX, y: 446, class: "axis-label" }, "금리 저점 · 주가 저점"));
+  svg.append(el("text", { x: 18, y: CY + 5, class: "axis-label" }, "← 금리 상승"));
+  svg.append(el("text", { x: 382, y: CY + 5, class: "axis-label" }, "금리 하락 →"));
 
-  dot(svg, data.angle, 10, "now", `${data.as_of} · ${data.phase}국면 (현재)`);
+  dot(svg, data.angle, 10, "now", `${data.as_of} · ${data.phase} ${PHASES[data.phase].name} (현재)`);
 }
 
 function card(label, indicator, unit) {
@@ -79,6 +83,23 @@ function card(label, indicator, unit) {
   return div;
 }
 
+function stageItem(stage, current) {
+  const li = document.createElement("li");
+  li.className = ["stage", stage.turning ? "turning" : "", current ? "current" : ""].join(" ").trim();
+  if (current) li.setAttribute("aria-current", "step");
+  li.innerHTML = `<p class="stage-head"><b class="stage-key"></b><span class="stage-name"></span></p><p class="stage-desc"></p>`;
+  li.querySelector(".stage-key").textContent = stage.key;
+  li.querySelector(".stage-name").textContent = stage.turning ? "전환점" : stage.name;
+  if (current) {
+    const badge = document.createElement("span");
+    badge.className = "now-badge";
+    badge.textContent = "현재";
+    li.querySelector(".stage-head").append(badge);
+  }
+  li.querySelector(".stage-desc").textContent = stage.desc;
+  return li;
+}
+
 function showNotice(text) {
   const n = document.getElementById("notice");
   n.textContent = text;
@@ -89,14 +110,17 @@ function render(data) {
   const meta = PHASES[data.phase];
   const title = document.getElementById("phase-title");
   title.innerHTML = `<span class="badge"></span> · `;
-  title.querySelector(".badge").textContent = `${data.phase}국면`;
+  title.querySelector(".badge").textContent = data.phase;
   title.append(meta.name);
-  document.getElementById("phase-action").textContent = `${data.as_of} 기준 · ${meta.action}`;
+  document.getElementById("phase-action").textContent = `${data.as_of} 기준 · ${meta.desc}`;
   document.getElementById("egg-desc").textContent =
-    `현재 ${data.phase}국면(${meta.name}), 달걀 맨 위에서 ${data.angle.toFixed(0)}° 지점` +
+    `현재 ${data.phase}(${meta.name}), 달걀 맨 위에서 ${data.angle.toFixed(0)}° 지점` +
     (data.interpolated ? ` · 발표되지 않아 앞뒤 달 평균으로 채운 값: ${data.interpolated.join(", ")}` : "");
 
   drawEgg(document.getElementById("egg"), data);
+  document.getElementById("stages").replaceChildren(
+    ...STAGES.map((stage) => stageItem(stage, stage.key === data.phase)),
+  );
 
   const ind = data.indicators;
   document.getElementById("cards").replaceChildren(

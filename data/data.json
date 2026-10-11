@@ -1,7 +1,7 @@
 {
   "updated_at": "2026-10-11T14:46:50Z",
   "as_of": "2026-08",
-  "phase": "B",
+  "phase": "B2",
   "angle": 66.9,
   "inputs": {
     "level": 0.678,
@@ -32,122 +32,122 @@
     {
       "month": "2024-09",
       "angle": 23.2,
-      "phase": "A"
+      "phase": "B1"
     },
     {
       "month": "2024-10",
       "angle": 37.3,
-      "phase": "A"
+      "phase": "B1"
     },
     {
       "month": "2024-11",
       "angle": 36.3,
-      "phase": "A"
+      "phase": "B1"
     },
     {
       "month": "2024-12",
       "angle": 37.1,
-      "phase": "A"
+      "phase": "B1"
     },
     {
       "month": "2025-01",
       "angle": 43.6,
-      "phase": "A"
+      "phase": "B1"
     },
     {
       "month": "2025-02",
       "angle": 49.2,
-      "phase": "A"
+      "phase": "B1"
     },
     {
       "month": "2025-03",
       "angle": 56.8,
-      "phase": "A"
+      "phase": "B1"
     },
     {
       "month": "2025-04",
       "angle": 57.6,
-      "phase": "A"
+      "phase": "B1"
     },
     {
       "month": "2025-05",
       "angle": 56.4,
-      "phase": "A"
+      "phase": "B1"
     },
     {
       "month": "2025-06",
       "angle": 45.3,
-      "phase": "A"
+      "phase": "B1"
     },
     {
       "month": "2025-07",
       "angle": 43.6,
-      "phase": "A"
+      "phase": "B1"
     },
     {
       "month": "2025-08",
       "angle": 42.0,
-      "phase": "A"
+      "phase": "B1"
     },
     {
       "month": "2025-09",
       "angle": 44.7,
-      "phase": "A"
+      "phase": "B1"
     },
     {
       "month": "2025-10",
       "angle": 47.2,
-      "phase": "A"
+      "phase": "B1"
     },
     {
       "month": "2025-11",
       "angle": 59.1,
-      "phase": "A"
+      "phase": "B1"
     },
     {
       "month": "2025-12",
       "angle": 63.9,
-      "phase": "B"
+      "phase": "B2"
     },
     {
       "month": "2026-01",
       "angle": 65.3,
-      "phase": "B"
+      "phase": "B2"
     },
     {
       "month": "2026-02",
       "angle": 63.4,
-      "phase": "B"
+      "phase": "B2"
     },
     {
       "month": "2026-03",
       "angle": 46.9,
-      "phase": "A"
+      "phase": "B1"
     },
     {
       "month": "2026-04",
       "angle": 44.2,
-      "phase": "A"
+      "phase": "B1"
     },
     {
       "month": "2026-05",
       "angle": 44.9,
-      "phase": "A"
+      "phase": "B1"
     },
     {
       "month": "2026-06",
       "angle": 55.6,
-      "phase": "A"
+      "phase": "B1"
     },
     {
       "month": "2026-07",
       "angle": 65.7,
-      "phase": "B"
+      "phase": "B2"
     },
     {
       "month": "2026-08",
       "angle": 66.9,
-      "phase": "B"
+      "phase": "B2"
     }
   ],
   "interpolated": [

@@ -15,47 +15,47 @@ def test_yoy():
 
 
 def test_phase_for_angle_boundaries():
-    assert phase_for_angle(0.0) == "A"
-    assert phase_for_angle(59.9) == "A"
-    assert phase_for_angle(60.0) == "B"
-    assert phase_for_angle(359.9) == "F"
+    assert phase_for_angle(0.0) == "B1"
+    assert phase_for_angle(59.9) == "B1"
+    assert phase_for_angle(60.0) == "B2"
+    assert phase_for_angle(359.9) == "A3"
 
 
 def test_phase_for_angle_wraps():
-    assert phase_for_angle(360.0) == "A"
+    assert phase_for_angle(360.0) == "B1"
 
 
-def test_flat_at_peak_is_a():
+def test_flat_at_peak_is_b1():
     rates = [1.0] * 60 + [5.0] * 60
     p = compute_point(rates, FLAT_CPI)
     assert p["level"] == pytest.approx(1.0)
     assert p["angle"] == pytest.approx(0.0)
-    assert p["phase"] == "A"
+    assert p["phase"] == "B1"
 
 
-def test_rising_into_peak_is_f():
+def test_rising_into_peak_is_a3():
     rates = [1.0] * 60 + ramp(1.0, 5.0, 24)
-    assert compute_point(rates, FLAT_CPI)["phase"] == "F"
+    assert compute_point(rates, FLAT_CPI)["phase"] == "A3"
 
 
-def test_falling_from_high_is_b():
+def test_falling_from_high_is_b2():
     rates = [1.0] * 60 + [5.0] * 48 + ramp(5.0, 3.5, 12)
-    assert compute_point(rates, FLAT_CPI)["phase"] == "B"
+    assert compute_point(rates, FLAT_CPI)["phase"] == "B2"
 
 
-def test_flat_at_bottom_is_c_or_d():
+def test_flat_at_bottom_is_b3_or_a1():
     rates = [5.0] * 60 + [1.0] * 60
-    assert compute_point(rates, FLAT_CPI)["phase"] in ("C", "D")
+    assert compute_point(rates, FLAT_CPI)["phase"] in ("B3", "A1")
 
 
-def test_rising_from_low_is_d():
+def test_rising_from_low_is_a1():
     rates = [5.0] * 60 + [1.0] * 48 + ramp(1.0, 1.8, 12)
-    assert compute_point(rates, FLAT_CPI)["phase"] == "D"
+    assert compute_point(rates, FLAT_CPI)["phase"] == "A1"
 
 
-def test_rising_from_middle_is_e():
+def test_rising_from_middle_is_a2():
     rates = [5.0] * 60 + [1.5] * 48 + ramp(1.5, 3.0, 12)
-    assert compute_point(rates, FLAT_CPI)["phase"] == "E"
+    assert compute_point(rates, FLAT_CPI)["phase"] == "A2"
 
 
 def test_cpi_trend_shifts_x():

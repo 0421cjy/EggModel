@@ -45,7 +45,7 @@ def test_to_monthly():
 def test_payload_shape():
     p = update.build_payload(*sample_inputs(), now=NOW)
     assert p["updated_at"] == "2026-10-11T22:00:00Z"
-    assert p["phase"] in "ABCDEF"
+    assert p["phase"] in ("A1", "A2", "A3", "B1", "B2", "B3")
     assert 0.0 <= p["angle"] < 360.0
     assert set(p["inputs"]) == {"level", "direction", "cpi_trend", "x", "y"}
     assert set(p["indicators"]) == {"fed_funds", "dgs10", "cpi_yoy", "core_cpi_yoy"}
