@@ -17,6 +17,10 @@ GitHub Actions가 매일 한국 시간 오전 7시에 FRED 데이터를 받아 `
     FRED_API_KEY=발급받은키 python scripts/update.py
     python -m http.server 8000   # http://localhost:8000
 
+## 화면 코드를 바꿀 때
+`index.html`에서 `assets/app.js`와 `assets/style.css`를 부르는 주소 끝의 `?v=날짜`를 함께 올려 주세요 (예: `?v=20261012` → `?v=20261020`).
+GitHub Pages는 이 파일들을 10분 동안 캐시하므로, 버전을 올리지 않으면 방문자 브라우저가 예전 코드로 새 데이터를 읽다가 오류가 날 수 있습니다.
+
 ## 판정 방법
 `docs/superpowers/specs/2026-10-11-egg-model-design.md` 4장을 참고하세요.
 
