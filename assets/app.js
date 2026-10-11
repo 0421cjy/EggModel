@@ -1,13 +1,13 @@
 // 금리 고점(맨 위)에서 시계방향으로 도는 순서대로 나열한 국면. 고점·저점은 구간이 아니라 전환점이라 판정 대상(PHASES)에서 빠진다.
 const STAGES = [
-  { key: "B1", name: "하락 조정 국면", desc: "저점부터 A1~A3 국면을 거치며 주가가 높아졌고, 소신파 투자자가 부화뇌동파 투자자에게 주식을 넘긴 상태" },
-  { key: "B2", name: "하락 동행 국면", desc: "B1 국면과 크게 다르지 않지만 가격 하락이 진행되는 상태" },
-  { key: "B3", name: "하락 과장 국면", desc: "시장의 공포가 최고조인 상태" },
-  { key: "저점", turning: true, desc: "B3 국면의 끝. 주가가 많이 떨어졌고 비관주의가 여전한 상태" },
-  { key: "A1", name: "상승 조정 국면", desc: "저점을 지나 상승 국면에 진입하기 시작하는 상태" },
-  { key: "A2", name: "상승 동행 국면", desc: "자산 가격 상승이 실물경기 상승을 앞지르는 상태" },
-  { key: "A3", name: "상승 과장 국면", desc: "실물경기까지 회복되어 가며 과장 국면에 진입하는 상태" },
-  { key: "고점", turning: true, desc: "경기부양책이 중단되고 인플레이션 우려가 등장하기 시작하며 주가가 고점을 맞이한 상태" },
+  { key: "B1", name: "하락 조정 국면", desc: "저점부터 A1~A3 국면을 거치며 주가가 높아졌고, 소신파 투자자가 부화뇌동파 투자자에게 주식을 넘긴 상태", action: "매도", advice: "주가가 아직 높은 수준일 때 보유 주식을 정리해 현금을 확보합니다. 낙관론에 휩쓸려 새로 사지 않습니다." },
+  { key: "B2", name: "하락 동행 국면", desc: "B1 국면과 크게 다르지 않지만 가격 하락이 진행되는 상태", action: "관망", advice: "하락이 이어지는 동안 서둘러 사지 않고, 현금을 쥔 채 공포가 커지기를 기다립니다." },
+  { key: "B3", name: "하락 과장 국면", desc: "시장의 공포가 최고조인 상태", action: "매수", advice: "모두가 겁에 질려 팔 때 우량주를 나눠서 사기 시작합니다." },
+  { key: "저점", turning: true, desc: "B3 국면의 끝. 주가가 많이 떨어졌고 비관주의가 여전한 상태", action: "분할 매수", advice: "비관론이 여전하지만 가장 싸게 살 수 있는 시기이므로 매수를 이어 갑니다." },
+  { key: "A1", name: "상승 조정 국면", desc: "저점을 지나 상승 국면에 진입하기 시작하는 상태", action: "매수", advice: "상승 초입이라 가격이 아직 낮습니다. 매수를 마무리하고 보유 비중을 채웁니다." },
+  { key: "A2", name: "상승 동행 국면", desc: "자산 가격 상승이 실물경기 상승을 앞지르는 상태", action: "보유", advice: "상승이 진행되는 동안 산 주식을 그대로 들고 갑니다. 뒤늦은 추격 매수는 피합니다." },
+  { key: "A3", name: "상승 과장 국면", desc: "실물경기까지 회복되어 가며 과장 국면에 진입하는 상태", action: "매도", advice: "과열 신호가 늘어나므로 보유 주식을 단계적으로 팔아 이익을 실현합니다." },
+  { key: "고점", turning: true, desc: "경기부양책이 중단되고 인플레이션 우려가 등장하기 시작하며 주가가 고점을 맞이한 상태", action: "매도 마무리", advice: "긴축 전환과 인플레이션 우려가 보이면 남은 주식을 정리합니다." },
 ];
 const PHASES = Object.fromEntries(STAGES.filter((s) => !s.turning).map((s) => [s.key, s]));
 const ORDER = Object.keys(PHASES);
@@ -108,7 +108,7 @@ function stageItem(stage, current) {
   const li = document.createElement("li");
   li.className = ["stage", stage.turning ? "turning" : "", current ? "current" : ""].join(" ").trim();
   if (current) li.setAttribute("aria-current", "step");
-  li.innerHTML = `<p class="stage-head"><b class="stage-key"></b><span class="stage-name"></span></p><p class="stage-desc"></p>`;
+  li.innerHTML = `<p class="stage-head"><b class="stage-key"></b><span class="stage-name"></span></p><p class="stage-desc"></p><p class="stage-advice"><b></b> <span></span></p>`;
   li.querySelector(".stage-key").textContent = stage.key;
   li.querySelector(".stage-name").textContent = stage.turning ? "전환점" : stage.name;
   if (current) {
@@ -118,6 +118,8 @@ function stageItem(stage, current) {
     li.querySelector(".stage-head").append(badge);
   }
   li.querySelector(".stage-desc").textContent = stage.desc;
+  li.querySelector(".stage-advice b").textContent = `대응: ${stage.action}`;
+  li.querySelector(".stage-advice span").textContent = stage.advice;
   return li;
 }
 
@@ -134,6 +136,11 @@ function render(data) {
   title.querySelector(".badge").textContent = data.phase;
   title.append(meta.name);
   document.getElementById("phase-action").textContent = `${data.as_of} 기준 · ${meta.desc}`;
+  const advice = document.getElementById("phase-advice");
+  advice.replaceChildren();
+  const label = document.createElement("b");
+  label.textContent = `코스톨라니식 대응: ${meta.action}`;
+  advice.append(label, ` · ${meta.advice}`);
   document.getElementById("egg-desc").textContent =
     `현재 ${data.phase}(${meta.name}), 달걀 맨 위에서 ${data.angle.toFixed(0)}° 지점`;
 

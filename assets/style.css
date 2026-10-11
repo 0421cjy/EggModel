@@ -26,6 +26,7 @@ body {
 h1 { margin: 4px 0 8px; font-size: clamp(26px, 6vw, 38px); line-height: 1.25; }
 h1 .badge { color: var(--accent); }
 .lead { margin: 0; font-size: 17px; }
+.advice { margin: 8px 0 0; padding: 8px 12px; border-left: 4px solid var(--accent); background: var(--surface); border-radius: 0 8px 8px 0; font-size: 15px; }
 .notice { margin: 12px 0 0; padding: 8px 12px; border-radius: 8px; background: var(--warn-bg); color: var(--warn-ink); font-size: 14px; }
 .egg-card { margin: 24px 0; padding: 16px; background: var(--surface); border: 1px solid var(--line); border-radius: 16px; }
 #egg { display: block; width: 100%; max-width: 420px; height: auto; margin: 0 auto; }
@@ -59,6 +60,10 @@ h1 .badge { color: var(--accent); }
 .stage.current .stage-name { color: var(--ink); }
 .now-badge { margin-left: auto; padding: 1px 8px; border-radius: 999px; background: var(--accent); color: var(--bg); font-size: 12px; font-weight: 700; }
 .stage-desc { margin: 2px 0 0; font-size: 15px; }
+.stage-advice { margin: 6px 0 0; padding-top: 6px; border-top: 1px solid var(--line); font-size: 14px; color: var(--muted); }
+.stage-advice b { color: var(--ink); }
+.stage.current .stage-advice { color: var(--ink); border-top-color: var(--accent); }
+.stages-note { margin: 0 0 10px; color: var(--muted); font-size: 13px; }
 .cards { display: grid; grid-template-columns: repeat(auto-fit, minmax(160px, 1fr)); gap: 12px; }
 .card { padding: 14px 16px; background: var(--surface); border: 1px solid var(--line); border-radius: 12px; }
 .card .label { margin: 0; color: var(--muted); font-size: 13px; }
