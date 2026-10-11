@@ -100,7 +100,8 @@ function render(data) {
   title.append(meta.name);
   document.getElementById("phase-action").textContent = `${data.as_of} 기준 · ${meta.action}`;
   document.getElementById("egg-desc").textContent =
-    `현재 ${data.phase}국면(${meta.name}), 달걀 맨 위에서 ${data.angle.toFixed(0)}° 지점`;
+    `현재 ${data.phase}국면(${meta.name}), 달걀 맨 위에서 ${data.angle.toFixed(0)}° 지점` +
+    (data.interpolated ? ` · 발표되지 않아 앞뒤 달 평균으로 채운 값: ${data.interpolated.join(", ")}` : "");
 
   drawEgg(document.getElementById("egg"), data);
 

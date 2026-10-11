@@ -17,6 +17,11 @@ def yoy(series):
     return [(series[i] / series[i - 12] - 1) * 100 for i in range(12, len(series))]
 
 
+def normalize_angle(angle):
+    """소수 첫째 자리로 반올림해 0 이상 360 미만으로 맞춘다 (359.96 → 0.0)."""
+    return round(angle, 1) % 360.0
+
+
 def phase_for_angle(angle):
     return PHASES[int(angle // 60) % 6]
 
@@ -38,9 +43,8 @@ def compute_point(rates, cpi_yoy):
     x = max(-1.0, min(1.0, direction + CPI_WEIGHT * math.tanh(cpi_trend / CPI_SCALE)))
     y = 2 * level - 1
 
-    angle = math.degrees(math.atan2(-x, y)) % 360.0
-    if angle >= 360.0:  # 아주 작은 음수가 360.0으로 반올림되는 경우
-        angle = 0.0
+    # 화면·JSON에 쓰는 반올림 값으로 국면을 정해야 둘이 어긋나지 않는다.
+    angle = normalize_angle(math.degrees(math.atan2(-x, y)))
 
     return {
         "level": level,

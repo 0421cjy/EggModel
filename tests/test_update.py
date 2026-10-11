@@ -80,7 +80,7 @@ def test_dgs10_skips_missing_latest():
 
 def test_gap_in_months_raises():
     fed, cpi, core, dgs10 = sample_inputs()
-    fed = [o for o in fed if not o[0].startswith("2020-05")]
+    fed = [o for o in fed if not o[0].startswith(("2020-05", "2020-06"))]
     with pytest.raises(ValueError):
         update.build_payload(fed, cpi, core, dgs10, now=NOW)
 
@@ -112,3 +112,55 @@ def test_main_fetch_error_keeps_file(tmp_path, monkeypatch):
 
     assert update.main(fetch=boom, out_path=out) != 0
     assert out.read_text(encoding="utf-8") == "old"
+
+
+def drop_month(obs, month):
+    return [o for o in obs if not o[0].startswith(month)]
+
+
+def test_single_missing_cpi_month_is_interpolated():
+    # 2025년 미 정부 셧다운으로 2025-10 CPI가 발표되지 않았다 (FRED 값 ".")
+    fed, cpi, core, dgs10 = sample_inputs()
+    p = update.build_payload(fed, drop_month(cpi, "2025-10"), drop_month(core, "2025-10"),
+                             dgs10, now=NOW)
+    assert p["as_of"] == "2026-08"
+    assert p["interpolated"] == ["CPI 2025-10", "근원 CPI 2025-10"]
+
+
+def test_no_interpolated_key_when_complete():
+    assert "interpolated" not in update.build_payload(*sample_inputs(), now=NOW)
+
+
+def test_two_consecutive_missing_months_raise():
+    fed, cpi, core, dgs10 = sample_inputs()
+    cpi = drop_month(drop_month(cpi, "2025-10"), "2025-11")
+    with pytest.raises(ValueError):
+        update.build_payload(fed, cpi, core, dgs10, now=NOW)
+
+
+def test_angle_never_rounds_to_360():
+    p = update.build_payload(*sample_inputs(), now=NOW)
+    assert all(0.0 <= t["angle"] < 360.0 for t in p["trail"])
+
+
+def test_core_cpi_without_year_before_gives_clear_error():
+    fed, cpi, core, dgs10 = sample_inputs()
+    core = [o for o in core if o[0] >= "2025-09"]
+    with pytest.raises(ValueError, match="근원 CPI"):
+        update.build_payload(fed, cpi, core, dgs10, now=NOW)
+
+
+def test_fetch_series_http_error_names_series_without_key(monkeypatch):
+    import io
+    import urllib.error
+
+    def fake_urlopen(url, timeout):
+        body = io.BytesIO(b'{"error_code": 400, "error_message": "Bad Request. The value for variable api_key is not registered."}')
+        raise urllib.error.HTTPError(url, 400, "Bad Request", {}, body)
+
+    monkeypatch.setattr(update.urllib.request, "urlopen", fake_urlopen)
+    with pytest.raises(RuntimeError) as info:
+        update.fetch_series("FEDFUNDS", "secret-key-123", "2013-01-01")
+    msg = str(info.value)
+    assert "FEDFUNDS" in msg and "not registered" in msg
+    assert "secret-key-123" not in msg

@@ -95,3 +95,10 @@ def test_trail_length_and_last_point():
     trail = compute_trail(rates, FLAT_CPI, months=24)
     assert len(trail) == 24
     assert trail[-1] == compute_point(rates, FLAT_CPI)
+
+
+def test_normalize_angle_rounds_into_range():
+    from phase import normalize_angle
+    assert normalize_angle(359.96) == 0.0
+    assert normalize_angle(359.94) == 359.9
+    assert normalize_angle(84.04) == 84.0

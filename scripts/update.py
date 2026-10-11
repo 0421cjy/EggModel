@@ -5,6 +5,7 @@
 import json
 import os
 import sys
+import urllib.error
 import urllib.parse
 import urllib.request
 from datetime import date, datetime, timezone
@@ -25,8 +26,16 @@ def fetch_series(series_id, api_key, start):
         "file_type": "json",
         "observation_start": start,
     })
-    with urllib.request.urlopen(f"{FRED_URL}?{query}", timeout=30) as resp:
-        return parse_observations(json.load(resp))
+    try:
+        with urllib.request.urlopen(f"{FRED_URL}?{query}", timeout=30) as resp:
+            return parse_observations(json.load(resp))
+    except urllib.error.HTTPError as exc:
+        # URL에는 API 키가 들어 있으므로 메시지에 넣지 않는다.
+        try:
+            detail = json.load(exc).get("error_message", "")
+        except ValueError:
+            detail = ""
+        raise RuntimeError(f"{series_id} 조회 실패 (HTTP {exc.code}) {detail}".strip()) from None
 
 
 def parse_observations(payload):
@@ -45,6 +54,27 @@ def _month_index(month):
     return int(month[:4]) * 12 + int(month[5:7]) - 1
 
 
+def _month_name(index):
+    return f"{index // 12:04d}-{index % 12 + 1:02d}"
+
+
+def _fill_single_gaps(monthly):
+    """앞뒤 달 값이 모두 있는 한 달짜리 결측만 평균으로 채운다. 채운 달 목록을 함께 돌려준다.
+
+    예: 2025년 미 정부 셧다운으로 2025-10 CPI가 발표되지 않았다.
+    두 달 이상 연속으로 빠진 구간은 그대로 두어 _check_contiguous에서 멈추게 한다.
+    """
+    filled = dict(monthly)
+    added = []
+    indexes = sorted(_month_index(m) for m in monthly)
+    for a, b in zip(indexes, indexes[1:]):
+        if b - a == 2:
+            month = _month_name(a + 1)
+            filled[month] = (monthly[_month_name(a)] + monthly[_month_name(b)]) / 2
+            added.append(month)
+    return filled, added
+
+
 def _year_before(month):
     return f"{int(month[:4]) - 1:04d}{month[4:]}"
 
@@ -55,13 +85,22 @@ def _check_contiguous(months):
             raise ValueError(f"월간 데이터에 빠진 달이 있습니다: {a} → {b}")
 
 
-def _latest_yoy(monthly):
+def _latest_yoy(monthly, label):
     month = max(monthly)
-    return month, (monthly[month] / monthly[_year_before(month)] - 1) * 100
+    base = monthly.get(_year_before(month))
+    if base is None:
+        raise ValueError(f"{label}의 {_year_before(month)} 값이 없어 전년비를 계산할 수 없습니다")
+    return month, (monthly[month] / base - 1) * 100
 
 
 def build_payload(fed, cpi, core, dgs10, now):
-    fed_m, cpi_m, core_m = to_monthly(fed), to_monthly(cpi), to_monthly(core)
+    interpolated = []
+    monthly = []
+    for label, obs in (("기준금리", fed), ("CPI", cpi), ("근원 CPI", core)):
+        filled, added = _fill_single_gaps(to_monthly(obs))
+        monthly.append(filled)
+        interpolated += [f"{label} {m}" for m in added]
+    fed_m, cpi_m, core_m = monthly
 
     months = sorted(set(fed_m) & set(cpi_m))
     _check_contiguous(months)
@@ -72,14 +111,14 @@ def build_payload(fed, cpi, core, dgs10, now):
     point = compute_point(rates, cpi_yoy)
     trail = compute_trail(rates, cpi_yoy, TRAIL_MONTHS)
     fed_month = max(fed_m)
-    core_month, core_yoy = _latest_yoy(core_m)
+    core_month, core_yoy = _latest_yoy(core_m, "근원 CPI")
     dgs10_date, dgs10_value = dgs10[-1]
 
-    return {
+    payload = {
         "updated_at": now.astimezone(timezone.utc).strftime("%Y-%m-%dT%H:%M:%SZ"),
         "as_of": months[-1],
         "phase": point["phase"],
-        "angle": round(point["angle"], 1),
+        "angle": point["angle"],
         "inputs": {
             "level": round(point["level"], 3),
             "direction": round(point["direction"], 3),
@@ -94,10 +133,13 @@ def build_payload(fed, cpi, core, dgs10, now):
             "core_cpi_yoy": {"value": round(core_yoy, 2), "date": core_month},
         },
         "trail": [
-            {"month": m, "angle": round(p["angle"], 1), "phase": p["phase"]}
+            {"month": m, "angle": p["angle"], "phase": p["phase"]}
             for m, p in zip(months[-TRAIL_MONTHS:], trail)
         ],
     }
+    if interpolated:
+        payload["interpolated"] = interpolated
+    return payload
 
 
 def main(fetch=fetch_series, out_path=OUT_PATH):
