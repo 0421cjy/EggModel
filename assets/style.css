@@ -36,6 +36,12 @@ h1 .badge { color: var(--accent); }
 #egg .phase-label { fill: var(--muted); font-size: 18px; font-weight: 700; text-anchor: middle; dominant-baseline: middle; }
 #egg .phase-label.current { fill: var(--ink); font-size: 22px; }
 #egg .axis-label { fill: var(--muted); font-size: 13px; text-anchor: middle; }
+/* 달걀 SVG는 화면 폭에 맞춰 줄어들므로, 좁은 화면에서는 글자를 키워 실제 크기를 12px 이상으로 유지한다. */
+@media (max-width: 560px) {
+  #egg .axis-label { font-size: 18px; }
+  #egg .phase-label { font-size: 22px; }
+  #egg .phase-label.current { font-size: 26px; }
+}
 #egg .hit { fill: transparent; cursor: default; }
 #egg .now { fill: var(--accent); stroke: var(--surface); stroke-width: 3; }
 .caption { margin: 8px 0 0; text-align: center; color: var(--muted); font-size: 14px; }

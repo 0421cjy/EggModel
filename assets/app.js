@@ -50,6 +50,12 @@ function dot(svg, angle, r, cls, label) {
   svg.append(g);
 }
 
+function sideLabel(x, arrow, text) {
+  const label = el("text", { x, y: CY - 6, class: "axis-label" });
+  label.append(el("tspan", { x, dy: 0 }, arrow), el("tspan", { x, dy: "1.2em" }, text));
+  return label;
+}
+
 function drawEgg(svg, data) {
   svg.replaceChildren();
   ORDER.forEach((key, i) => {
@@ -67,8 +73,9 @@ function drawEgg(svg, data) {
 
   svg.append(el("text", { x: CX, y: 34, class: "axis-label" }, "금리 고점 · 주가 고점"));
   svg.append(el("text", { x: CX, y: 446, class: "axis-label" }, "금리 저점 · 주가 저점"));
-  svg.append(el("text", { x: 18, y: CY + 5, class: "axis-label" }, "← 금리 상승"));
-  svg.append(el("text", { x: 382, y: CY + 5, class: "axis-label" }, "금리 하락 →"));
+  // 좌우 라벨은 화살표와 글자를 두 줄로 나눠, 모바일에서 글자를 키워도 달걀과 겹치지 않게 한다.
+  svg.append(sideLabel(9, "←", "금리 상승"));
+  svg.append(sideLabel(391, "→", "금리 하락"));
 
   dot(svg, data.angle, 10, "now", `${data.as_of} · ${data.phase} ${PHASES[data.phase].name} (현재)`);
 }
