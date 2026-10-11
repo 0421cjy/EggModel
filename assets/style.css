@@ -37,6 +37,7 @@ h1 .badge { color: var(--accent); }
 #egg .phase-label.current { fill: var(--ink); font-size: 22px; }
 #egg .axis-label { fill: var(--muted); font-size: 13px; text-anchor: middle; }
 #egg .trail { fill: var(--accent); }
+#egg .trail-line { fill: none; stroke: var(--accent); stroke-width: 2; stroke-linecap: round; stroke-linejoin: round; opacity: 0.45; }
 #egg .hit { fill: transparent; cursor: default; }
 #egg .now { fill: var(--accent); stroke: var(--surface); stroke-width: 3; }
 .caption { margin: 8px 0 0; text-align: center; color: var(--muted); font-size: 14px; }

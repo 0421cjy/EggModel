@@ -36,9 +36,31 @@ function arcPath(from, to) {
   return `M${CX},${CY} L${polyline(pts)} Z`;
 }
 
+// 이동 경로는 오래된 달일수록 안쪽에 두어 나선처럼 그린다. 현재 달은 둘레(1.0) 위에 놓인다.
+const TRAIL_INNER = 0.74;
+
+function trailScale(i, n) {
+  return n <= 1 ? 1 : TRAIL_INNER + ((1 - TRAIL_INNER) * i) / (n - 1);
+}
+
+// 이웃한 두 달 사이를 직선이 아니라 달걀 모양을 따라 잇는다. 0°/360° 경계는 짧은 쪽으로 돈다.
+function trailPath(points) {
+  const pts = [eggPoint(points[0].angle, points[0].scale)];
+  for (let i = 1; i < points.length; i++) {
+    const a = points[i - 1], b = points[i];
+    const delta = ((b.angle - a.angle + 540) % 360) - 180;
+    const steps = Math.max(1, Math.ceil(Math.abs(delta) / 2));
+    for (let s = 1; s <= steps; s++) {
+      const t = s / steps;
+      pts.push(eggPoint(a.angle + delta * t, a.scale + (b.scale - a.scale) * t));
+    }
+  }
+  return `M${polyline(pts)}`;
+}
+
 // 점 위에 올리면 월·국면이 보이는 툴팁. 실제 점보다 넓은 투명 원을 받침으로 둔다.
-function dot(svg, angle, r, cls, label, opacity) {
-  const [x, y] = eggPoint(angle);
+function dot(svg, angle, scale, r, cls, label, opacity) {
+  const [x, y] = eggPoint(angle, scale);
   const g = el("g");
   g.append(el("title", {}, label));
   g.append(el("circle", { cx: x, cy: y, r: Math.max(r, 12), class: "hit" }));
@@ -68,12 +90,15 @@ function drawEgg(svg, data) {
   svg.append(el("text", { x: 18, y: CY + 5, class: "axis-label" }, "← 하락기"));
   svg.append(el("text", { x: 382, y: CY + 5, class: "axis-label" }, "상승기 →"));
 
-  const trail = data.trail.slice(0, -1);
-  trail.forEach((p, i) => {
-    const opacity = (0.15 + (0.5 * i) / Math.max(trail.length, 1)).toFixed(2);
-    dot(svg, p.angle, 5, "trail", `${p.month} · ${p.phase}국면`, opacity);
+  // trail의 마지막 원소가 현재 달이다.
+  const n = data.trail.length;
+  const points = data.trail.map((p, i) => ({ ...p, scale: trailScale(i, n) }));
+  if (n > 1) svg.append(el("path", { d: trailPath(points), class: "trail-line" }));
+  points.slice(0, -1).forEach((p, i) => {
+    const opacity = (0.15 + (0.5 * i) / Math.max(n - 1, 1)).toFixed(2);
+    dot(svg, p.angle, p.scale, 5, "trail", `${p.month} · ${p.phase}국면`, opacity);
   });
-  dot(svg, data.angle, 10, "now", `${data.as_of} · ${data.phase}국면 (현재)`);
+  dot(svg, data.angle, 1, 10, "now", `${data.as_of} · ${data.phase}국면 (현재)`);
 }
 
 function card(label, indicator, unit) {
