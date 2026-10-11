@@ -1,6 +1,8 @@
 # 코스톨라니 달걀 지도
 
 미국 기준금리(FEDFUNDS)와 CPI로 코스톨라니 달걀 모형의 현재 국면을 계산해 보여 주는 정적 페이지입니다.
+페이지: https://0421cjy.github.io/EggModel/
+
 GitHub Actions가 매일 한국 시간 오전 7시에 FRED 데이터를 받아 `data/data.json`을 갱신합니다.
 
 ## 처음 설정
