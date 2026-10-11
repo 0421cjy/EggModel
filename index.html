@@ -1,0 +1,44 @@
+<!doctype html>
+<html lang="ko">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>코스톨라니 달걀 지도</title>
+  <meta name="description" content="미국 기준금리와 물가로 본 코스톨라니 달걀 모형의 현재 위치">
+  <link rel="stylesheet" href="assets/style.css">
+</head>
+<body>
+  <main class="wrap">
+    <header>
+      <p class="eyebrow">코스톨라니 달걀 모형 · 미국</p>
+      <h1 id="phase-title">불러오는 중…</h1>
+      <p id="phase-action" class="lead"></p>
+      <p id="notice" class="notice" hidden></p>
+    </header>
+
+    <section class="egg-card" aria-label="달걀 모형 위 현재 위치">
+      <svg id="egg" viewBox="-30 0 460 460" role="img" aria-labelledby="egg-desc"></svg>
+      <p id="egg-desc" class="caption"></p>
+    </section>
+
+    <section class="cards" id="cards" aria-label="주요 지표"></section>
+
+    <section class="method">
+      <h2>어떻게 판정하나요</h2>
+      <ol>
+        <li><b>수준</b>: 최근 10년 기준금리 최저~최고 구간에서 지금 금리의 위치 (달걀의 위아래)</li>
+        <li><b>방향</b>: 12개월 전 대비 기준금리 변화 (왼쪽 = 하락기, 오른쪽 = 상승기)</li>
+        <li><b>물가 보정</b>: 최근 3개월 CPI 상승률이 오르면 상승기 쪽으로, 내리면 하락기 쪽으로 조금 옮깁니다.</li>
+        <li>이렇게 정한 각도를 60°씩 6개 국면(A~F)으로 나눕니다. 흐린 점은 최근 24개월의 이동 경로입니다.</li>
+      </ol>
+      <p class="disclaimer">투자 조언이 아니며, 코스톨라니 모형을 단순화한 참고 자료입니다. 12개월 변화를 쓰기 때문에 실제 금리 전환보다 국면이 늦게 바뀔 수 있습니다.</p>
+    </section>
+
+    <footer>
+      데이터: <a href="https://fred.stlouisfed.org/">FRED, Federal Reserve Bank of St. Louis</a> ·
+      마지막 갱신 <span id="updated"></span>
+    </footer>
+  </main>
+  <script src="assets/app.js"></script>
+</body>
+</html>

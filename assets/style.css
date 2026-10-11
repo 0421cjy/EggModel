@@ -1,0 +1,53 @@
+:root {
+  --bg: #f7f6f2; --surface: #ffffff; --ink: #1d1d1b; --muted: #6b6a65;
+  --line: #d9d6cc; --sector: #efece4; --sector-alt: #e6e2d7;
+  --accent: #c2410c; --accent-soft: #fbe3d4; --warn-bg: #fff4d6; --warn-ink: #7a5300;
+}
+@media (prefers-color-scheme: dark) {
+  :root:not([data-theme="light"]) {
+    --bg: #141413; --surface: #1e1e1c; --ink: #ecebe6; --muted: #a3a29c;
+    --line: #3a3935; --sector: #24231f; --sector-alt: #2c2b27;
+    --accent: #e8610f; --accent-soft: #3d2516; --warn-bg: #3a2f12; --warn-ink: #f5d48a;
+  }
+}
+:root[data-theme="dark"] {
+  --bg: #141413; --surface: #1e1e1c; --ink: #ecebe6; --muted: #a3a29c;
+  --line: #3a3935; --sector: #24231f; --sector-alt: #2c2b27;
+  --accent: #e8610f; --accent-soft: #3d2516; --warn-bg: #3a2f12; --warn-ink: #f5d48a;
+}
+* { box-sizing: border-box; }
+body {
+  margin: 0; background: var(--bg); color: var(--ink);
+  font-family: system-ui, -apple-system, "Apple SD Gothic Neo", "Malgun Gothic", sans-serif;
+  line-height: 1.6;
+}
+.wrap { max-width: 760px; margin: 0 auto; padding: 32px 16px 48px; }
+.eyebrow { margin: 0; color: var(--muted); font-size: 14px; }
+h1 { margin: 4px 0 8px; font-size: clamp(26px, 6vw, 38px); line-height: 1.25; }
+h1 .badge { color: var(--accent); }
+.lead { margin: 0; font-size: 17px; }
+.notice { margin: 12px 0 0; padding: 8px 12px; border-radius: 8px; background: var(--warn-bg); color: var(--warn-ink); font-size: 14px; }
+.egg-card { margin: 24px 0; padding: 16px; background: var(--surface); border: 1px solid var(--line); border-radius: 16px; }
+#egg { display: block; width: 100%; max-width: 420px; height: auto; margin: 0 auto; }
+#egg .sector { fill: var(--sector); stroke: var(--line); stroke-width: 1; }
+#egg .sector.alt { fill: var(--sector-alt); }
+#egg .sector.current { fill: var(--accent-soft); }
+#egg .outline { fill: none; stroke: var(--ink); stroke-width: 2; }
+#egg .phase-label { fill: var(--muted); font-size: 18px; font-weight: 700; text-anchor: middle; dominant-baseline: middle; }
+#egg .phase-label.current { fill: var(--ink); font-size: 22px; }
+#egg .axis-label { fill: var(--muted); font-size: 13px; text-anchor: middle; }
+#egg .trail { fill: var(--accent); }
+#egg .hit { fill: transparent; cursor: default; }
+#egg .now { fill: var(--accent); stroke: var(--surface); stroke-width: 3; }
+.caption { margin: 8px 0 0; text-align: center; color: var(--muted); font-size: 14px; }
+.cards { display: grid; grid-template-columns: repeat(auto-fit, minmax(160px, 1fr)); gap: 12px; }
+.card { padding: 14px 16px; background: var(--surface); border: 1px solid var(--line); border-radius: 12px; }
+.card .label { margin: 0; color: var(--muted); font-size: 13px; }
+.card .value { margin: 2px 0; font-size: 26px; font-weight: 700; font-variant-numeric: tabular-nums; }
+.card .date { margin: 0; color: var(--muted); font-size: 12px; }
+.method { margin-top: 32px; }
+.method h2 { font-size: 20px; margin: 0 0 8px; }
+.method ol { padding-left: 20px; margin: 0; }
+.disclaimer { color: var(--muted); font-size: 14px; }
+footer { margin-top: 32px; color: var(--muted); font-size: 13px; }
+footer a { color: inherit; }
