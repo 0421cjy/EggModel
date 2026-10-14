@@ -1,14 +1,14 @@
 {
-  "updated_at": "2026-10-14T00:50:33Z",
-  "as_of": "2026-08",
-  "phase": "B2",
-  "angle": 66.9,
+  "updated_at": "2026-10-14T14:42:31Z",
+  "as_of": "2026-09",
+  "phase": "B1",
+  "angle": 38.7,
   "inputs": {
-    "level": 0.678,
-    "direction": -0.604,
-    "cpi_trend": -0.814,
-    "x": -0.836,
-    "y": 0.356
+    "level": 0.701,
+    "direction": -0.438,
+    "cpi_trend": 0.254,
+    "x": -0.321,
+    "y": 0.402
   },
   "indicators": {
     "fed_funds": {
@@ -20,20 +20,15 @@
       "date": "2026-10-09"
     },
     "cpi_yoy": {
-      "value": 3.35,
-      "date": "2026-08"
+      "value": 3.72,
+      "date": "2026-09"
     },
     "core_cpi_yoy": {
-      "value": 2.45,
-      "date": "2026-08"
+      "value": 2.57,
+      "date": "2026-09"
     }
   },
   "trail": [
-    {
-      "month": "2024-09",
-      "angle": 23.2,
-      "phase": "B1"
-    },
     {
       "month": "2024-10",
       "angle": 37.3,
@@ -148,6 +143,11 @@
       "month": "2026-08",
       "angle": 66.9,
       "phase": "B2"
+    },
+    {
+      "month": "2026-09",
+      "angle": 38.7,
+      "phase": "B1"
     }
   ],
   "interpolated": [
