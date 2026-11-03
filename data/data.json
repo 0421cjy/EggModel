@@ -1,5 +1,5 @@
 {
-  "updated_at": "2026-11-02T01:12:44Z",
+  "updated_at": "2026-11-03T03:16:48Z",
   "as_of": "2026-09",
   "phase": "B1",
   "angle": 38.7,
@@ -12,12 +12,12 @@
   },
   "indicators": {
     "fed_funds": {
-      "value": 3.75,
-      "date": "2026-09"
+      "value": 3.88,
+      "date": "2026-10"
     },
     "dgs10": {
-      "value": 4.98,
-      "date": "2026-10-29"
+      "value": 4.94,
+      "date": "2026-10-30"
     },
     "cpi_yoy": {
       "value": 3.72,
