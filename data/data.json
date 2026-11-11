@@ -1,14 +1,14 @@
 {
-  "updated_at": "2026-11-10T03:56:42Z",
-  "as_of": "2026-09",
-  "phase": "B1",
-  "angle": 38.7,
+  "updated_at": "2026-11-11T01:41:34Z",
+  "as_of": "2026-10",
+  "phase": "A3",
+  "angle": 359.0,
   "inputs": {
-    "level": 0.701,
-    "direction": -0.438,
-    "cpi_trend": 0.254,
-    "x": -0.321,
-    "y": 0.402
+    "level": 0.725,
+    "direction": -0.207,
+    "cpi_trend": 0.646,
+    "x": 0.008,
+    "y": 0.451
   },
   "indicators": {
     "fed_funds": {
@@ -16,24 +16,19 @@
       "date": "2026-10"
     },
     "dgs10": {
-      "value": 4.86,
-      "date": "2026-11-06"
+      "value": 4.88,
+      "date": "2026-11-09"
     },
     "cpi_yoy": {
-      "value": 3.72,
-      "date": "2026-09"
+      "value": 3.95,
+      "date": "2026-10"
     },
     "core_cpi_yoy": {
-      "value": 2.57,
-      "date": "2026-09"
+      "value": 2.77,
+      "date": "2026-10"
     }
   },
   "trail": [
-    {
-      "month": "2024-10",
-      "angle": 37.3,
-      "phase": "B1"
-    },
     {
       "month": "2024-11",
       "angle": 36.3,
@@ -148,6 +143,11 @@
       "month": "2026-09",
       "angle": 38.7,
       "phase": "B1"
+    },
+    {
+      "month": "2026-10",
+      "angle": 359.0,
+      "phase": "A3"
     }
   ],
   "interpolated": [
